@@ -6,24 +6,23 @@ using System.Linq;
 
 public class MicrophoneMinigame : MonoBehaviour
 {
-    [SerializeField]
-    private float offsetVolume;
-    private float timeForOneClip;
+   
+    private int timeForOneClip = 100;
     private AudioClip audioClip;
-    int frequancy = 44100;
+    private int frequancy = 44100;
     public Slider targetSlider;
     public Slider ValueSlider;
-    float curVel;
+    private float curVel;
     public float smTime;
     public float sliderSpeed;
+    public GameObject windowOk;
+    private bool windowOpen = false;
     int test = 0;
     private void Start()
     {
-        foreach (var device in Microphone.devices)
-        {
-            Debug.Log("Name: " + device);
-        }
-        audioClip = Microphone.Start(Microphone.devices[0], true, 1, frequancy);
+
+        audioClip = Microphone.Start(Microphone.devices[0], true, timeForOneClip, frequancy);
+
     }
     void Update()
     {
@@ -33,6 +32,12 @@ public class MicrophoneMinigame : MonoBehaviour
     private void SetValueToSlider()
     {
         ValueSlider.value = Mathf.SmoothDamp(ValueSlider.value, GetValue(audioClip), ref curVel, smTime, sliderSpeed);
+        if (targetSlider.value < ValueSlider.value && !windowOpen)
+        {
+            windowOpen = true;
+            windowOk.SetActive(true);
+            Invoke("DisableWindow",1f);
+        }
 
     }
     private float GetValue(AudioClip audioClip)
@@ -40,7 +45,7 @@ public class MicrophoneMinigame : MonoBehaviour
 
         int dec = 128;
         float[] waveData = new float[dec];
-        int micPosition = Microphone.GetPosition(Microphone.devices[0]) - (dec + 1);
+        int micPosition = Microphone.GetPosition(Microphone.devices[0]) - (dec + audioClip.channels);
         audioClip.GetData(waveData, micPosition);
 
 
@@ -55,5 +60,10 @@ public class MicrophoneMinigame : MonoBehaviour
         }
 
         return Mathf.Sqrt(levelMax);
+    }
+    void DisableWindow()
+    {
+        windowOk.SetActive(false);
+        windowOpen = false;
     }
 }
