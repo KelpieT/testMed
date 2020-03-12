@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MicrophoneMinigame : MonoBehaviour
 {
-   
+
     private int timeForOneClip = 100;
     private AudioClip audioClip;
     private int frequancy = 44100;
@@ -31,12 +31,17 @@ public class MicrophoneMinigame : MonoBehaviour
     private void SetValueToSlider()
     {
         ValueSlider.value = Mathf.SmoothDamp(ValueSlider.value, GetValue(audioClip), ref curVel, smTime, sliderSpeed);
-        if (targetSlider.value < ValueSlider.value && !windowOpen)
+        if (targetSlider.value < ValueSlider.value && !windowOpen )
         {
             windowOpen = true;
             windowOk.SetActive(true);
-            Invoke("DisableWindow",1f);
+            Invoke("DisableWindow", 1f);
         }
+        if(targetSlider.value > ValueSlider.value)
+        {
+            windowOpen = false;
+        }
+
 
     }
     private float GetValue(AudioClip audioClip)
@@ -63,6 +68,6 @@ public class MicrophoneMinigame : MonoBehaviour
     void DisableWindow()
     {
         windowOk.SetActive(false);
-        windowOpen = false;
+
     }
 }
