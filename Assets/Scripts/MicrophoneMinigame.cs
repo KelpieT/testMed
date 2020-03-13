@@ -20,7 +20,7 @@ public class MicrophoneMinigame : MonoBehaviour
     {
         StartRecordAudio();
     }
-    void Update()
+    private void Update()
     {
         SetValueToSlider();
     }
@@ -48,7 +48,16 @@ public class MicrophoneMinigame : MonoBehaviour
         int dec = 128;
         float[] waveData = new float[dec];
         int micPosition = Microphone.GetPosition(Microphone.devices[0]) - (dec + audioClip.channels);
-        audioClip.GetData(waveData, micPosition);
+        int newMicPos;
+        if (micPosition < dec)
+        {
+            newMicPos = micPosition + audioClip.samples - dec;
+        }
+        else
+        {
+            newMicPos = micPosition - dec;
+        }
+        audioClip.GetData(waveData, newMicPos);
         float levelMax = 0;
         for (int i = 0; i < dec; i++)
         {
